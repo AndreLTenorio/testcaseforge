@@ -2,7 +2,8 @@ import type { AcceptanceCriterion, GherkinStep, TestCase, Language, Priority, Se
 import { t } from '../i18n'
 
 let gherkinTcCounter = 0
-export function resetGherkinCounter() { gherkinTcCounter = 0 }
+const usedGherkinNegTitles = new Set<string>()
+export function resetGherkinCounter() { gherkinTcCounter = 0; usedGherkinNegTitles.clear() }
 
 function buildGivenSteps(preconditions: string[], lang: Language): GherkinStep[] {
   if (preconditions.length === 0) return [{ keyword: 'Given', text: t('userAccessesSystem', lang) }]
@@ -62,24 +63,28 @@ export function generateGherkinTestCases(
     criterionRef: criterion.id,
   })
 
-  // Negative scenario
+  // Negative scenario — deduplicated globally across all criteria
   if (criterion.negatable) {
-    gherkinTcCounter++
-    const negId = `TC-${String(gherkinTcCounter).padStart(3, '0')}`
-    cases.push({
-      id: negId,
-      title: `${negId}: ${buildScenarioTitle(criterion, lang, 'negative')}`,
-      kind: 'negative',
-      preconditions: criterion.preconditions,
-      steps: [],
-      gherkinSteps: [
-        ...buildGivenSteps(criterion.preconditions, lang),
-        { keyword: 'When', text: t('userTriesInvalid', lang) },
-        { keyword: 'Then', text: t('systemShowsError', lang) },
-      ],
-      priority, severity, type, behavior: 'negative',
-      criterionRef: criterion.id,
-    })
+    const negTitle = buildScenarioTitle(criterion, lang, 'negative')
+    if (!usedGherkinNegTitles.has(negTitle)) {
+      usedGherkinNegTitles.add(negTitle)
+      gherkinTcCounter++
+      const negId = `TC-${String(gherkinTcCounter).padStart(3, '0')}`
+      cases.push({
+        id: negId,
+        title: `${negId}: ${negTitle}`,
+        kind: 'negative',
+        preconditions: criterion.preconditions,
+        steps: [],
+        gherkinSteps: [
+          ...buildGivenSteps(criterion.preconditions, lang),
+          { keyword: 'When', text: t('userTriesInvalid', lang) },
+          { keyword: 'Then', text: t('systemShowsError', lang) },
+        ],
+        priority, severity, type, behavior: 'negative',
+        criterionRef: criterion.id,
+      })
+    }
   }
 
   return cases

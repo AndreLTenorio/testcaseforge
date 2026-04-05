@@ -2,7 +2,8 @@ import type { AcceptanceCriterion, TestCase, ProceduralStep, Language, Priority,
 import { t } from '../i18n'
 
 let tcCounter = 0
-export function resetTcCounter() { tcCounter = 0 }
+const usedNegativeTitles = new Set<string>()
+export function resetTcCounter() { tcCounter = 0; usedNegativeTitles.clear() }
 
 function buildPositiveSteps(criterion: AcceptanceCriterion, lang: Language): ProceduralStep[] {
   const steps: ProceduralStep[] = []
@@ -82,9 +83,11 @@ export function generateProceduralTestCases(
     criterionRef: criterion.id,
   })
 
-  // Negative cases
+  // Negative cases — deduplicated globally across all criteria
   if (criterion.negatable) {
     for (const rule of deriveNegativeRules(criterion, lang)) {
+      if (usedNegativeTitles.has(rule.title)) continue
+      usedNegativeTitles.add(rule.title)
       tcCounter++
       const negId = `TC-${String(tcCounter).padStart(3, '0')}`
       cases.push({

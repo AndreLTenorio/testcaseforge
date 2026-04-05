@@ -54,12 +54,21 @@ export function generateTestCases(parsed: ParsedUserStory, metadata: InputMetada
     }
   }
 
+  // Deduplicate positive cases with identical titles (e.g. "display X" criteria that collapse to same action)
+  const seenTitles = new Set<string>()
+  const deduped = testCases.filter(tc => {
+    const baseTitle = tc.title.replace(/^TC-\d+:\s*/, '')
+    if (tc.kind === 'positive' && seenTitles.has(baseTitle)) return false
+    if (tc.kind === 'positive') seenTitles.add(baseTitle)
+    return true
+  })
+
   return {
     feature: parsed.title,
     persona: parsed.persona,
     action: parsed.action,
     benefit: parsed.benefit,
-    testCases,
+    testCases: deduped,
     language,
   }
 }
