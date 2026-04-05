@@ -38,6 +38,7 @@ export default function App() {
   const [batchOutputs, setBatchOutputs] = useState<GeneratedOutput[]>([])
   const [batchIndex, setBatchIndex] = useState(0)
   const [qaseModalOpen, setQaseModalOpen] = useState(false)
+  const [mobileTab, setMobileTab] = useState<'input' | 'output'>('input')
 
   const { toast, showToast, clearToast } = useToast()
   const { history, addEntry, removeEntry, clearHistory } = useHistory()
@@ -82,6 +83,7 @@ export default function App() {
           metadata.format,
           result.language,
         )
+        setMobileTab('output')
         showToast(`${result.testCases.length} ${t('toastGenerated')}`, 'success')
       }
       setIsGenerating(false)
@@ -182,10 +184,28 @@ export default function App() {
       <Header />
 
       <main className="flex-1 max-w-screen-2xl mx-auto w-full px-4 py-5 space-y-4">
+
+        {/* Mobile tab switcher — hidden on lg+ */}
+        <div className="flex lg:hidden rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
+          <button
+            onClick={() => setMobileTab('input')}
+            className={`flex-1 py-2.5 text-sm font-semibold transition-colors ${mobileTab === 'input' ? 'bg-[#30302E] text-white' : 'bg-white dark:bg-[#30302E]/60 text-slate-500 dark:text-slate-400'}`}
+          >
+            📋 {t('inputTitle')}
+          </button>
+          <button
+            onClick={() => setMobileTab('output')}
+            className={`flex-1 py-2.5 text-sm font-semibold transition-colors ${mobileTab === 'output' ? 'bg-[#30302E] text-white' : 'bg-white dark:bg-[#30302E]/60 text-slate-500 dark:text-slate-400'}`}
+          >
+            📝 {t('outputTitle')}
+            {output && <span className="ml-1.5 text-xs bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded-full">{output.testCases.length}</span>}
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
           {/* LEFT — Input */}
-          <div className="flex flex-col gap-4">
+          <div className={`flex flex-col gap-4 ${mobileTab === 'output' ? 'hidden lg:flex' : ''}`}>
             <div className="bg-white dark:bg-[#30302E] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <h2 className="font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
@@ -234,7 +254,7 @@ export default function App() {
           </div>
 
           {/* RIGHT — Output */}
-          <div className="bg-white dark:bg-[#30302E] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 overflow-y-auto max-h-[calc(100vh-100px)]">
+          <div className={`bg-white dark:bg-[#30302E] rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 lg:overflow-y-auto lg:max-h-[calc(100vh-100px)] ${mobileTab === 'input' ? 'hidden lg:block' : 'block'}`}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                 <span>📝</span> {t('outputTitle')}

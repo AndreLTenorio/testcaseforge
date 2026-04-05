@@ -28,7 +28,7 @@
 
 <br/>
 
-[🚀 Usar Agora](#-demonstração) · [📖 Documentação](#-como-funciona) · [🤝 Contribuir](CONTRIBUTING.md) · [⭐ Dar uma Estrela](https://github.com/AndreLTenorio/testcaseforge)
+[🚀 Usar Agora](https://testcaseforge.com.br) · [📖 Documentação](#-como-funciona) · [🤝 Contribuir](CONTRIBUTING.md) · [⭐ Dar uma Estrela](https://github.com/AndreLTenorio/testcaseforge)
 
 </div>
 
@@ -85,6 +85,8 @@ Templates manuais? Lento demais. Copy-paste que quebra o formato. Critérios esq
 - ✅ Histórico local das últimas 20 gerações
 - ✅ Dashboard de métricas de uso
 - ✅ Tema Dark / Light
+- ✅ Layout responsivo para mobile (tab switcher Input/Output)
+- ✅ Footer completo com Termos, Privacidade e Cookies (LGPD)
 
 ### ⚡ Zero Dependências de Runtime
 - Roda 100% no navegador
@@ -286,7 +288,8 @@ Leia o [CONTRIBUTING.md](CONTRIBUTING.md) para o guia completo.
 | Fase 2 | UI completa (React + Tailwind) | ✅ Concluída |
 | Fase 3 | Histórico, Batch, Exportações | ✅ Concluída |
 | Fase 4 | Métricas, Qase, Chrome Extension, ES | ✅ Concluída |
-| Fase 5 | Deploy, README, Open Source launch | 🚀 Agora |
+| Fase 5 | Footer legal, responsivo mobile, Open Source launch | ✅ Concluída |
+| Fase 6 | Domínio próprio (testcaseforge.com.br), deploy Vercel | 🚀 Em andamento |
 
 ---
 
