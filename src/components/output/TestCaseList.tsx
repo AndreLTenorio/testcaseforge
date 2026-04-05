@@ -1,6 +1,7 @@
 import type { GeneratedOutput, OutputFormat, TestCase } from '../../engine/types'
 import TestCaseCard from './TestCaseCard'
 import ExportToolbar from './ExportToolbar'
+import { useUILanguage } from '../../contexts/UILanguageContext'
 
 interface TestCaseListProps {
   output: GeneratedOutput
@@ -23,13 +24,16 @@ export default function TestCaseList({
   onExportMarkdown,
   onUpdateTestCase,
 }: TestCaseListProps) {
+  const { t } = useUILanguage()
+
   if (output.testCases.length === 0) {
+    const [line1, line2] = t('listEmpty').split('\n')
     return (
       <div className="flex flex-col items-center justify-center h-full min-h-[200px] text-slate-400 dark:text-slate-500 gap-3">
         <span className="text-5xl">📋</span>
         <p className="text-sm text-center">
-          Nenhum caso de teste gerado ainda.<br />
-          Cole sua User Story e clique em <strong className="text-[#30302E] dark:text-slate-200">Gerar</strong>.
+          {line1}<br />
+          {line2}
         </p>
       </div>
     )

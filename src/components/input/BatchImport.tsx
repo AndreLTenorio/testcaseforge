@@ -36,7 +36,7 @@ function extractTitle(text: string, index: number): string {
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
   const first = lines[0] ?? ''
   const clean = first.replace(/^#{1,3}\s+/, '').slice(0, 60)
-  return clean || `User Story ${index + 1}`
+  return clean || `Story ${index + 1}`
 }
 
 export default function BatchImport({ onImport }: BatchImportProps) {
@@ -142,7 +142,7 @@ export default function BatchImport({ onImport }: BatchImportProps) {
                 onClick={handleConfirm}
                 className="w-full bg-[#30302E] hover:bg-[#252523] text-white font-semibold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2"
               >
-                <span>⚒️</span> {t('batchGenerate')} {preview.length} User Stories
+                <span>⚒️</span> {t('batchGenerate')} {preview.length} {t('batchSub')}
               </button>
             </div>
           )}

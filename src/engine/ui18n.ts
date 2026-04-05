@@ -84,6 +84,7 @@ export type UIKey =
   | 'metricsFirst'
   | 'metricsLast'
   | 'metricsReset'
+  | 'listEmpty'
   | 'metricsDistrib'
   | 'metricsCasesUnit'
   // MetadataForm options
@@ -110,11 +111,11 @@ const UI: Record<UIKey, UILabels> = {
   // Input
   inputTitle: { 'pt-br': 'Entrada', 'en': 'Input', 'es': 'Entrada' },
   clearAll:   { 'pt-br': 'Limpar tudo', 'en': 'Clear all', 'es': 'Limpiar todo' },
-  storyInputLabel: { 'pt-br': 'User Story', 'en': 'User Story', 'es': 'User Story' },
+  storyInputLabel: { 'pt-br': 'História de Usuário', 'en': 'User Story', 'es': 'Historia de Usuario' },
   storyPlaceholder: {
-    'pt-br': `Cole aqui o texto da sua User Story...\n\nExemplo:\nComo um paciente,\nEu quero agendar uma teleconsulta,\nPara que eu possa ser atendido sem sair de casa.\n\nCritérios de Aceite:\n1. O paciente deve estar logado no sistema\n2. O paciente deve selecionar a especialidade médica desejada\n3. O sistema deve exibir os horários disponíveis\n4. O paciente deve confirmar o agendamento\n5. O sistema deve exibir mensagem de sucesso\n\nRegras de Negócio:\n- Não é permitido agendar mais de 3 consultas no mesmo dia\n- O agendamento deve ser feito com no mínimo 2 horas de antecedência`,
+    'pt-br': `Cole aqui o texto da sua História de Usuário...\n\nExemplo:\nComo um paciente,\nEu quero agendar uma teleconsulta,\nPara que eu possa ser atendido sem sair de casa.\n\nCritérios de Aceite:\n1. O paciente deve estar logado no sistema\n2. O paciente deve selecionar a especialidade médica desejada\n3. O sistema deve exibir os horários disponíveis\n4. O paciente deve confirmar o agendamento\n5. O sistema deve exibir mensagem de sucesso\n\nRegras de Negócio:\n- Não é permitido agendar mais de 3 consultas no mesmo dia\n- O agendamento deve ser feito com no mínimo 2 horas de antecedência`,
     'en': `Paste your User Story text here...\n\nExample:\nAs a patient,\nI want to schedule a teleconsultation,\nSo that I can be attended without leaving home.\n\nAcceptance Criteria:\n1. The patient must be logged in to the system\n2. The patient must select the desired medical specialty\n3. The system must display available time slots\n4. The patient must confirm the appointment\n5. The system must display a success message\n\nBusiness Rules:\n- Scheduling more than 3 appointments on the same day is not allowed\n- The appointment must be scheduled at least 2 hours in advance`,
-    'es': `Pegue aquí el texto de su User Story...\n\nEjemplo:\nComo un paciente,\nQuiero agendar una teleconsulta,\nPara que pueda ser atendido sin salir de casa.\n\nCriterios de Aceptación:\n1. El paciente debe haber iniciado sesión en el sistema\n2. El paciente debe seleccionar la especialidad médica deseada\n3. El sistema debe mostrar los horarios disponibles\n4. El paciente debe confirmar la cita\n5. El sistema debe mostrar un mensaje de éxito\n\nReglas de Negocio:\n- No se permite agendar más de 3 citas el mismo día\n- La cita debe agendarse con al menos 2 horas de anticipación`,
+    'es': `Pegue aquí el texto de su Historia de Usuario...\n\nEjemplo:\nComo un paciente,\nQuiero agendar una teleconsulta,\nPara que pueda ser atendido sin salir de casa.\n\nCriterios de Aceptación:\n1. El paciente debe haber iniciado sesión en el sistema\n2. El paciente debe seleccionar la especialidad médica deseada\n3. El sistema debe mostrar los horarios disponibles\n4. El paciente debe confirmar la cita\n5. El sistema debe mostrar un mensaje de éxito\n\nReglas de Negocio:\n- No se permite agendar más de 3 citas el mismo día\n- La cita debe agendarse con al menos 2 horas de anticipación`,
   },
   storyHint: {
     'pt-br': 'Suporta texto do Jira (PT-BR, EN e ES), critérios de aceite em bullets ou numerados, e regras de negócio.',
@@ -147,9 +148,9 @@ const UI: Record<UIKey, UILabels> = {
   qaseBtn:     { 'pt-br': '📤 Qase', 'en': '📤 Qase', 'es': '📤 Qase' },
   emptyTitle:  { 'pt-br': 'Pronto para forjar', 'en': 'Ready to forge', 'es': 'Listo para forjar' },
   emptyDesc: {
-    'pt-br': 'Cole sua User Story no painel esquerdo\ne clique em',
+    'pt-br': 'Cole sua História de Usuário no painel esquerdo\ne clique em',
     'en':    'Paste your User Story in the left panel\nand click',
-    'es':    'Pegue su User Story en el panel izquierdo\ny haga clic en',
+    'es':    'Pegue su Historia de Usuario en el panel izquierdo\ny haga clic en',
   },
   emptyGenerate: { 'pt-br': 'Gerar Casos de Teste', 'en': 'Generate Test Cases', 'es': 'Generar Casos de Prueba' },
   // Feature grid
@@ -160,9 +161,14 @@ const UI: Record<UIKey, UILabels> = {
   featureBatch:   { 'pt-br': 'Importação em lote', 'en': 'Batch import', 'es': 'Importación por lotes' },
   featureExport:  { 'pt-br': 'Export JSON/CSV/MD', 'en': 'Export JSON/CSV/MD', 'es': 'Exportar JSON/CSV/MD' },
   // Toasts
-  toastEmptyStory:    { 'pt-br': 'Cole o texto da User Story antes de gerar.', 'en': 'Paste the User Story text before generating.', 'es': 'Pegue el texto de la User Story antes de generar.' },
+  listEmpty: {
+    'pt-br': 'Nenhum caso gerado ainda.\nCole sua História de Usuário e clique em Gerar.',
+    'en':    'No cases generated yet.\nPaste your User Story and click Generate.',
+    'es':    'Ningún caso generado aún.\nPegue su Historia de Usuario y haga clic en Generar.',
+  },
+  toastEmptyStory:    { 'pt-br': 'Cole o texto da História de Usuário antes de gerar.', 'en': 'Paste the User Story text before generating.', 'es': 'Pegue el texto de la Historia de Usuario antes de generar.' },
   toastError:         { 'pt-br': 'Erro ao gerar casos de teste.', 'en': 'Error generating test cases.', 'es': 'Error al generar casos de prueba.' },
-  toastNoCases:       { 'pt-br': 'Nenhum caso encontrado. Verifique o texto da User Story.', 'en': 'No cases found. Check the User Story text.', 'es': 'No se encontraron casos. Verifique el texto de la User Story.' },
+  toastNoCases:       { 'pt-br': 'Nenhum caso encontrado. Verifique o texto da História de Usuário.', 'en': 'No cases found. Check the User Story text.', 'es': 'No se encontraron casos. Verifique el texto de la Historia de Usuario.' },
   toastGenerated:     { 'pt-br': 'casos de teste gerados!', 'en': 'test cases generated!', 'es': 'casos de prueba generados!' },
   toastRestoredHistory: { 'pt-br': 'Geração restaurada do histórico.', 'en': 'Generation restored from history.', 'es': 'Generación restaurada del historial.' },
   toastBatchNone:     { 'pt-br': 'Nenhum caso gerado do batch.', 'en': 'No cases generated from batch.', 'es': 'No se generaron casos del batch.' },
@@ -176,22 +182,22 @@ const UI: Record<UIKey, UILabels> = {
   toastQase:          { 'pt-br': 'caso(s) enviados ao Qase!', 'en': 'case(s) sent to Qase!', 'es': 'caso(s) enviados a Qase!' },
   // Sections
   batchTitle:   { 'pt-br': 'Importação em Lote (Batch)', 'en': 'Batch Import', 'es': 'Importación por Lotes (Batch)' },
-  batchSub:     { 'pt-br': 'múltiplas User Stories', 'en': 'multiple User Stories', 'es': 'múltiples User Stories' },
+  batchSub:     { 'pt-br': 'múltiplas Histórias de Usuário', 'en': 'multiple User Stories', 'es': 'múltiples Historias de Usuario' },
   historyTitle: { 'pt-br': 'Histórico', 'en': 'History', 'es': 'Historial' },
   metricsTitle: { 'pt-br': 'Dashboard de Métricas', 'en': 'Metrics Dashboard', 'es': 'Panel de Métricas' },
   howToTitle:   { 'pt-br': 'Como Usar', 'en': 'How to Use', 'es': 'Cómo Usar' },
   // Batch
   batchHint: {
-    'pt-br': 'Cole múltiplas User Stories separadas por --- ou carregue um arquivo .txt / .md.',
+    'pt-br': 'Cole múltiplas Histórias de Usuário separadas por --- ou carregue um arquivo .txt / .md.',
     'en':    'Paste multiple User Stories separated by --- or upload a .txt / .md file.',
-    'es':    'Pegue múltiples User Stories separadas por --- o cargue un archivo .txt / .md.',
+    'es':    'Pegue múltiples Historias de Usuario separadas por --- o cargue un archivo .txt / .md.',
   },
   batchLoadFile: { 'pt-br': '📁 Carregar arquivo', 'en': '📁 Load file', 'es': '📁 Cargar archivo' },
   batchFileTypes: { 'pt-br': '.txt ou .md', 'en': '.txt or .md', 'es': '.txt o .md' },
-  batchDetected:  { 'pt-br': 'histórias detectadas', 'en': 'stories detected', 'es': 'historias detectadas' },
+  batchDetected:  { 'pt-br': 'Histórias de Usuário detectadas', 'en': 'User Stories detected', 'es': 'Historias de Usuario detectadas' },
   batchGenerate:  { 'pt-br': 'Gerar Casos para', 'en': 'Generate Cases for', 'es': 'Generar Casos para' },
   // History
-  historyEmpty:   { 'pt-br': 'Nenhuma geração ainda. Os últimos 20 resultados serão salvos aqui automaticamente.', 'en': 'No generations yet. The last 20 results will be saved here automatically.', 'es': 'Sin generaciones aún. Los últimos 20 resultados se guardarán aquí automáticamente.' },
+  historyEmpty:   { 'pt-br': 'Nenhuma geração ainda. Os últimos 20 resultados de Histórias de Usuário serão salvos aqui automaticamente.', 'en': 'No generations yet. The last 20 User Story results will be saved here automatically.', 'es': 'Sin generaciones aún. Los últimos 20 resultados de Historias de Usuario se guardarán aquí automáticamente.' },
   historyRestore: { 'pt-br': 'Restaurar', 'en': 'Restore', 'es': 'Restaurar' },
   historyClear:   { 'pt-br': 'Limpar histórico', 'en': 'Clear history', 'es': 'Limpiar historial' },
   // Metrics
@@ -221,11 +227,11 @@ const UI: Record<UIKey, UILabels> = {
   typeSmoke:         { 'pt-br': 'Smoke',           'en': 'Smoke',           'es': 'Smoke' },
   typeExploratory:   { 'pt-br': 'Exploratório',   'en': 'Exploratory',     'es': 'Exploratorio' },
   // HowToUse steps
-  howToStep1Title: { 'pt-br': 'Cole sua User Story', 'en': 'Paste your User Story', 'es': 'Pegue su User Story' },
+  howToStep1Title: { 'pt-br': 'Cole sua História de Usuário', 'en': 'Paste your User Story', 'es': 'Pegue su Historia de Usuario' },
   howToStep1Desc: {
-    'pt-br': 'Copie o texto do seu card no Jira (ou qualquer ferramenta) e cole na área de entrada. Suporta PT-BR, EN e ES automaticamente.',
+    'pt-br': 'Copie o texto da sua História de Usuário do Jira (ou qualquer ferramenta) e cole na área de entrada. Suporta PT-BR, EN e ES automaticamente.',
     'en':    'Copy the text from your Jira card (or any tool) and paste it in the input area. Supports PT-BR, EN and ES automatically.',
-    'es':    'Copie el texto de su tarjeta de Jira (o cualquier herramienta) y péguelo en el área de entrada. Soporta PT-BR, EN y ES automáticamente.',
+    'es':    'Copie el texto de su Historia de Usuario del Jira (o cualquier herramienta) y péguelo en el área de entrada. Soporta PT-BR, EN y ES automáticamente.',
   },
   howToStep1Example: {
     'pt-br': '"Como um usuário, eu quero fazer login, para que eu acesse o sistema.\nCritérios de Aceite:\n1. O usuário deve informar e-mail e senha válidos\n2. O sistema deve exibir mensagem de erro para credenciais inválidas"',
