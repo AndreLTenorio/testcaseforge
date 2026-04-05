@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 dark:bg-[#141413] dark:text-slate-100;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-[#30302E] hover:bg-[#252523] text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-150;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 font-medium px-3 py-1.5 rounded-md transition-colors duration-150 text-sm;
+  }
+}
+
+@layer utilities {
+  /* ─── Fade-in / slide animations ───────────────────────────── */
+  .animate-in {
+    animation-duration: 300ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-fill-mode: both;
+  }
+
+  .fade-in {
+    animation-name: fadeIn;
+  }
+
+  .slide-in-from-bottom-2 {
+    animation-name: slideInFromBottom2;
+  }
+
+  .slide-in-from-bottom-4 {
+    animation-name: slideInFromBottom4;
+  }
+
+  .duration-200 {
+    animation-duration: 200ms;
+  }
+
+  .duration-300 {
+    animation-duration: 300ms;
+  }
+
+  /* ─── Forge pulse (generate button idle) ──────────────────── */
+  .forge-idle:not(:disabled) {
+    animation: forgePulse 2.5s ease-in-out infinite;
+  }
+
+  /* ─── Spinner ─────────────────────────────────────────────── */
+  .animate-spin {
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInFromBottom2 {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInFromBottom4 {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes forgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(48, 48, 46, 0.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(48, 48, 46, 0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ─── Gherkin Syntax Highlighting ──────────────────────────── */
+.gherkin-block {
+  background: #0d1117;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+
+.gherkin-block .kw-feature   { color: #e6b858; font-weight: 700; }
+.gherkin-block .kw-scenario  { color: #56d4dd; font-weight: 700; }
+.gherkin-block .kw-given     { color: #c792ea; font-weight: 600; }
+.gherkin-block .kw-when      { color: #82aaff; font-weight: 600; }
+.gherkin-block .kw-then      { color: #c3e88d; font-weight: 600; }
+.gherkin-block .kw-and       { color: #637777; font-weight: 600; }
+.gherkin-block .kw-but       { color: #f07178; font-weight: 600; }
+.gherkin-block .kw-comment   { color: #546e7a; font-style: italic; }
+.gherkin-block .kw-tag       { color: #f07178; }
+.gherkin-block .kw-string    { color: #c3e88d; }
+.gherkin-block .kw-number    { color: #f78c6c; }
+.gherkin-block .gherkin-text { color: #cdd3de; }
+
+/* ─── Scrollbar customization ────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(100,116,139,0.4); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(100,116,139,0.7); }
