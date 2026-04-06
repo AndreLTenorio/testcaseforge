@@ -27,34 +27,34 @@ function capitalizeFirst(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-function truncateTitle(title: string, maxLen = 60): string {
-  if (title.length <= maxLen) return title
-  return title.slice(0, maxLen - 1).replace(/\s+\S*$/, '') + '…'
+// Lowercase the start of a phrase: handles all-caps leading words (e.g. "QUERO" → "quero")
+function lowerStart(text: string): string {
+  return text.replace(/^[^\s]+/, w => w.toLowerCase())
 }
 
 function buildScenarioTitle(criterion: AcceptanceCriterion, lang: Language, kind: 'positive' | 'negative'): string {
   const firstAction = criterion.actions[0]
   if (firstAction) {
     const base = `${firstAction.verb} ${firstAction.target}`
-    if (kind === 'positive') return capitalizeFirst(truncateTitle(base))
+    if (kind === 'positive') return capitalizeFirst(base)
     const tryPrefix = lang === 'pt-br' ? 'Tentar' : lang === 'es' ? 'Intentar' : 'Try to'
     const withInvalid = lang === 'pt-br' ? 'com dados inválidos' : lang === 'es' ? 'con datos inválidos' : 'with invalid data'
-    return truncateTitle(`${tryPrefix} ${base.toLowerCase()} ${withInvalid}`)
+    return `${tryPrefix} ${base.toLowerCase()} ${withInvalid}`
   }
   const text = criterion.rawText.replace(/[\n\r]+/g, ' ').trim()
-  if (kind === 'positive') return truncateTitle(text)
-  return truncateTitle(`${text} — ${t('tryWithInvalidData', lang)}`)
+  if (kind === 'positive') return text
+  return `${text} — ${t('tryWithInvalidData', lang)}`
 }
 
 function buildScenarioDescription(criterion: AcceptanceCriterion, lang: Language, kind: 'positive' | 'negative'): string {
   if (kind === 'positive') {
     const prefix = t('descVerifyThat', lang)
     if (criterion.expectedResults.length > 0) {
-      const results = criterion.expectedResults.map(r => r.charAt(0).toLowerCase() + r.slice(1)).join('. ')
+      const results = criterion.expectedResults.map(r => lowerStart(r)).join('. ')
       return `${prefix} ${results}.`
     }
     const text = criterion.rawText.replace(/[\n\r]+/g, ' ').trim()
-    return `${prefix} ${text.charAt(0).toLowerCase() + text.slice(1)}.`
+    return `${prefix} ${lowerStart(text)}.`
   }
   return `${t('descNegativeVerify', lang)} ${t('userTriesInvalid', lang)}. ${t('systemShowsError', lang)}.`
 }

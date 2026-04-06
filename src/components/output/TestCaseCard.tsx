@@ -81,7 +81,7 @@ export default function TestCaseCard({ testCase, format, index, onCopy, onUpdate
     >
       {/* Card Header */}
       <div className={`px-4 py-3 ${KIND_BG_HEADER[testCase.kind]} transition-colors`}>
-        {/* Title — full width */}
+        {/* Title — full width, CSS truncate only (full text in tooltip + edit) */}
         {editMode ? (
           <EditableField
             value={testCase.title}
@@ -91,7 +91,7 @@ export default function TestCaseCard({ testCase, format, index, onCopy, onUpdate
           />
         ) : (
           <h3
-            className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug"
+            className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug truncate cursor-help"
             title={testCase.title}
           >
             {testCase.title}

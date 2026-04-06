@@ -111,28 +111,28 @@ export function generateProceduralTestCases(
   return cases
 }
 
-function truncateTitle(title: string, maxLen = 60): string {
-  if (title.length <= maxLen) return title
-  return title.slice(0, maxLen - 1).replace(/\s+\S*$/, '') + '…'
+// Lowercase the start of a phrase: handles all-caps leading words (e.g. "QUERO" → "quero")
+function lowerStart(text: string): string {
+  return text.replace(/^[^\s]+/, w => w.toLowerCase())
 }
 
 function buildPositiveTitle(criterion: AcceptanceCriterion, _lang: Language): string {
   const firstAction = criterion.actions[0]
   if (firstAction) {
-    return truncateTitle(`${firstAction.verb} ${firstAction.target}`)
+    return `${firstAction.verb} ${firstAction.target}`
   }
   const text = (criterion.expectedResults[0] ?? criterion.rawText).replace(/[\n\r]+/g, ' ').trim()
-  return truncateTitle(text)
+  return text
 }
 
 function buildPositiveDescription(criterion: AcceptanceCriterion, lang: Language): string {
   const prefix = t('descVerifyThat', lang)
   if (criterion.expectedResults.length > 0) {
-    const results = criterion.expectedResults.map(r => r.charAt(0).toLowerCase() + r.slice(1)).join('. ')
+    const results = criterion.expectedResults.map(r => lowerStart(r)).join('. ')
     return `${prefix} ${results}.`
   }
   const text = criterion.rawText.replace(/[\n\r]+/g, ' ').trim()
-  return `${prefix} ${text.charAt(0).toLowerCase() + text.slice(1)}.`
+  return `${prefix} ${lowerStart(text)}.`
 }
 
 interface DerivedRule { title: string; negation: string; expectedResult: string }
