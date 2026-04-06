@@ -78,6 +78,7 @@ export interface GherkinStep {
 export interface TestCase {
   id: string
   title: string
+  description?: string
   kind: TestCaseKind
   preconditions: string[]
   steps: ProceduralStep[]

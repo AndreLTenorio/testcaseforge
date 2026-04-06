@@ -78,11 +78,44 @@ function identifySection(line: string, lang: Language): SectionType | null {
   return null
 }
 
+// Gherkin connector keywords across supported languages. When consecutive list
+// items start with these, they are parts of the same scenario and must be
+// merged, otherwise each line becomes its own "criterion" with fragmented titles.
+const GHERKIN_CONTINUATION = /^\s*(and|e|y|when|quando|cuando|then|ent[ãa]o|entonces)\b/i
+const GHERKIN_START = /^\s*(given|dado\s+que|dado|dada\s+que|dada)\b/i
+// Scenario headers in Gherkin-style user stories
+const SCENARIO_HEADER = /^\s*(cen[áa]rio|scenario|escenario)\s*\d*\s*:?/i
+
 function extractListItems(text: string): string[] {
-  return text
+  const rawLines = text
     .split('\n')
-    .map(l => l.replace(/^[-*•]\s+|^\d+\.\s+/, '').trim())
-    .filter(l => l.length > 0)
+    .map(l => l.replace(/^[-*•]\s+|^\d+(?:\.\d+)*\.?\s+/, '').trim())
+    .filter(l => l.length > 0 && !SCENARIO_HEADER.test(l))
+
+  // Merge consecutive Gherkin lines into scenario blocks.
+  const merged: string[] = []
+  let buffer: string[] = []
+  const flush = () => {
+    if (buffer.length > 0) {
+      merged.push(buffer.join(' '))
+      buffer = []
+    }
+  }
+  for (const line of rawLines) {
+    const isGherkinStart = GHERKIN_START.test(line)
+    const isGherkinCont = GHERKIN_CONTINUATION.test(line)
+    if (isGherkinStart) {
+      flush()
+      buffer.push(line)
+    } else if (isGherkinCont && buffer.length > 0) {
+      buffer.push(line)
+    } else {
+      flush()
+      merged.push(line)
+    }
+  }
+  flush()
+  return merged
 }
 
 export function splitSections(text: string, lang: Language): Sections {
@@ -125,24 +158,31 @@ export function extractUserStoryParts(userStoryText: string, lang: Language): { 
   let action: string | null = null
   let benefit: string | null = null
 
+  // Normalize whitespace but preserve line breaks so anchored patterns still work.
+  const text = userStoryText.replace(/\r/g, '')
+
+  // Clause boundary: start of line, or after punctuation, or right after whitespace at line start.
+  // Anchoring to a boundary prevents picking up "Como" from inside criteria text.
+  const B = '(?:^|[,.;]\\s*)'
+
   if (lang === 'pt-br') {
-    const comoMatch = userStoryText.match(/como\s+(?:um?a?\s+)?(.+?)[\n,]/i)
-    const queroMatch = userStoryText.match(/eu\s+quero\s+(.+?)[\n,]/i)
-    const paraMatch = userStoryText.match(/para\s+que\s+(.+?)[\n,.]?$/im)
+    const comoMatch = text.match(new RegExp(`${B}como\\s+(?:um?a?\\s+)?([^\\n,.]+?)\\s*(?:[,.\\n]|$)`, 'im'))
+    const queroMatch = text.match(new RegExp(`${B}(?:eu\\s+)?quero\\s+([^\\n,]+?)\\s*(?:[,.\\n]|$)`, 'im'))
+    const paraMatch = text.match(new RegExp(`${B}para\\s+que\\s+([^\\n.]+?)\\s*(?:[.\\n]|$)`, 'im'))
     if (comoMatch) persona = comoMatch[1].trim()
     if (queroMatch) action = queroMatch[1].trim()
     if (paraMatch) benefit = paraMatch[1].trim()
   } else if (lang === 'es') {
-    const comoMatch = userStoryText.match(/como\s+(?:un?a?\s+)?(.+?)[\n,]/i)
-    const quieroMatch = userStoryText.match(/(?:yo\s+)?quiero\s+(.+?)[\n,]/i)
-    const paraMatch = userStoryText.match(/para\s+(?:que\s+)?(?:yo\s+)?(.+?)[\n,.]?$/im)
+    const comoMatch = text.match(new RegExp(`${B}como\\s+(?:un?a?\\s+)?([^\\n,.]+?)\\s*(?:[,.\\n]|$)`, 'im'))
+    const quieroMatch = text.match(new RegExp(`${B}(?:yo\\s+)?quiero\\s+([^\\n,]+?)\\s*(?:[,.\\n]|$)`, 'im'))
+    const paraMatch = text.match(new RegExp(`${B}para\\s+(?:que\\s+)?(?:yo\\s+)?([^\\n.]+?)\\s*(?:[.\\n]|$)`, 'im'))
     if (comoMatch) persona = comoMatch[1].trim()
     if (quieroMatch) action = quieroMatch[1].trim()
     if (paraMatch) benefit = paraMatch[1].trim()
   } else {
-    const asMatch = userStoryText.match(/as\s+(?:a|an)\s+(.+?)[\n,]/i)
-    const wantMatch = userStoryText.match(/i\s+want\s+(?:to\s+)?(.+?)[\n,]/i)
-    const soThatMatch = userStoryText.match(/so\s+that\s+(.+?)[\n,.]?$/im)
+    const asMatch = text.match(new RegExp(`${B}as\\s+(?:a|an)\\s+([^\\n,.]+?)\\s*(?:[,.\\n]|$)`, 'im'))
+    const wantMatch = text.match(new RegExp(`${B}i\\s+want\\s+(?:to\\s+)?([^\\n,]+?)\\s*(?:[,.\\n]|$)`, 'im'))
+    const soThatMatch = text.match(new RegExp(`${B}so\\s+that\\s+([^\\n.]+?)\\s*(?:[.\\n]|$)`, 'im'))
     if (asMatch) persona = asMatch[1].trim()
     if (wantMatch) action = wantMatch[1].trim()
     if (soThatMatch) benefit = soThatMatch[1].trim()

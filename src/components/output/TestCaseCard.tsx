@@ -31,6 +31,7 @@ const KIND_BG_HEADER: Record<TestCase['kind'], string> = {
 function buildCopyText(tc: TestCase, format: OutputFormat): string {
   const lines: string[] = []
   lines.push(tc.title)
+  if (tc.description) lines.push(`Descrição: ${tc.description}`)
   lines.push(`Prioridade: ${tc.priority} | Tipo: ${tc.type} | Comportamento: ${tc.behavior}`)
   lines.push('')
   if (tc.preconditions.length > 0) {
@@ -58,6 +59,7 @@ export default function TestCaseCard({ testCase, format, index, onCopy, onUpdate
   const showProcedural = (format === 'procedural' || format === 'both') && testCase.steps.length > 0
 
   const updateTitle = (title: string) => onUpdate({ ...testCase, title })
+  const updateDescription = (description: string) => onUpdate({ ...testCase, description })
   const updatePrecondition = (i: number, val: string) => {
     const preconditions = [...testCase.preconditions]
     preconditions[i] = val
@@ -79,52 +81,54 @@ export default function TestCaseCard({ testCase, format, index, onCopy, onUpdate
     >
       {/* Card Header */}
       <div className={`px-4 py-3 ${KIND_BG_HEADER[testCase.kind]} transition-colors`}>
-        <div className="flex items-start gap-2">
-          <div className="flex-1 min-w-0 group">
-            {editMode ? (
-              <EditableField
-                value={testCase.title}
-                onSave={updateTitle}
-                placeholder="Título do caso de teste"
-                className="font-semibold text-slate-800 dark:text-slate-100"
-              />
-            ) : (
-              <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug" title={testCase.title}>
-                {testCase.title}
-              </h3>
-            )}
-            <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-              <KindBadge kind={testCase.kind} />
-              <PriorityBadge priority={testCase.priority} />
-              <SeverityBadge severity={testCase.severity} />
-              <span className="text-xs text-slate-400 dark:text-slate-500 font-mono">
-                {testCase.criterionRef}
-              </span>
-            </div>
-          </div>
+        {/* Title — full width */}
+        {editMode ? (
+          <EditableField
+            value={testCase.title}
+            onSave={updateTitle}
+            placeholder="Título do caso de teste"
+            className="font-semibold text-slate-800 dark:text-slate-100"
+          />
+        ) : (
+          <h3
+            className="text-sm font-semibold text-slate-800 dark:text-slate-100 leading-snug"
+            title={testCase.title}
+          >
+            {testCase.title}
+          </h3>
+        )}
 
-          {/* Actions */}
-          <div className="flex items-center gap-1.5 shrink-0">
+        {/* Badges (left) + Actions (right) */}
+        <div className="flex items-center justify-between mt-1.5 gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <KindBadge kind={testCase.kind} />
+            <PriorityBadge priority={testCase.priority} />
+            <SeverityBadge severity={testCase.severity} />
+            <span className="text-xs text-slate-400 dark:text-slate-500 font-mono">
+              {testCase.criterionRef}
+            </span>
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
             <button
               onClick={() => onCopy(buildCopyText(testCase, format))}
-              className="btn-secondary"
+              className="btn-secondary px-2"
               title="Copiar caso de teste"
             >
-              📋 Copiar
+              📋
             </button>
             <button
               onClick={() => { setQaseMode(q => !q); setExpanded(true); setEditMode(false) }}
-              className={`btn-secondary hidden sm:inline-flex ${qaseMode ? 'bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-slate-200' : ''}`}
+              className={`btn-secondary px-2 hidden sm:inline-flex ${qaseMode ? 'bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-slate-200' : ''}`}
               title="Preview no estilo Qase.io"
             >
               Qase
             </button>
             <button
               onClick={() => { setEditMode(e => !e); setExpanded(true); setQaseMode(false) }}
-              className={`btn-secondary ${editMode ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700' : ''}`}
+              className={`btn-secondary px-2 ${editMode ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700' : ''}`}
               title={editMode ? 'Sair do modo de edição' : 'Editar caso de teste'}
             >
-              {editMode ? '✓ Concluir' : '✏️ Editar'}
+              {editMode ? '✓' : '✏️'}
             </button>
             <button
               onClick={() => setExpanded(e => !e)}
@@ -145,6 +149,27 @@ export default function TestCaseCard({ testCase, format, index, onCopy, onUpdate
           {/* Qase preview mode */}
           {qaseMode && (
             <QasePreview testCase={testCase} format={format} />
+          )}
+
+          {/* Description (always shown when expanded, not in qase mode) */}
+          {!qaseMode && testCase.description && (
+            <div>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-1.5">
+                Descrição {editMode && <span className="text-amber-500">(editável)</span>}
+              </p>
+              {editMode ? (
+                <EditableField
+                  value={testCase.description}
+                  onSave={updateDescription}
+                  placeholder="Descrição do caso de teste"
+                  multiline
+                />
+              ) : (
+                <div className="bg-slate-50 dark:bg-slate-800 rounded-lg px-3 py-2 text-sm text-slate-700 dark:text-slate-300">
+                  {testCase.description}
+                </div>
+              )}
+            </div>
           )}
 
           {/* Preconditions edit (only when not in qase mode) */}

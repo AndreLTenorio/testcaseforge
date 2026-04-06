@@ -1,6 +1,18 @@
 import type { ParsedUserStory, GeneratedOutput, InputMetadata, TestCase } from '../types'
 import { generateProceduralTestCases, resetTcCounter } from './proceduralGenerator'
 import { generateGherkinTestCases, resetGherkinCounter } from './gherkinGenerator'
+import { extractCriteria } from '../parser/criteriaExtractor'
+
+// Noise patterns: sub-bullets that are just variable placeholders or overly short
+// fragments not worth generating a dedicated test case for.
+const RULE_NOISE = /^\s*\[[^\]]+\]\s*(\(.*\))?\s*$/
+
+function isMeaningfulRule(rule: string): boolean {
+  const trimmed = rule.trim()
+  if (trimmed.length < 15) return false
+  if (RULE_NOISE.test(trimmed)) return false
+  return true
+}
 
 export function generateTestCases(parsed: ParsedUserStory, metadata: InputMetadata): GeneratedOutput {
   const { language, criteria, businessRules } = parsed
@@ -32,24 +44,20 @@ export function generateTestCases(parsed: ParsedUserStory, metadata: InputMetada
     }
   }
 
-  // Add test cases derived from business rules
-  for (const rule of businessRules) {
-    const ruleAsCriterion = {
-      id: `BR-${String(businessRules.indexOf(rule) + 1).padStart(3, '0')}`,
-      rawText: rule,
-      preconditions: [],
-      actions: [],
-      expectedResults: [],
-      dataElements: [],
-      negatable: true,
-      stateTransitions: [],
-    }
+  // Add test cases derived from business rules (filter out noise, run through
+  // the same criterion extractor to get structured actions/results).
+  const meaningfulRules = businessRules.filter(isMeaningfulRule)
+  const ruleCriteria = extractCriteria(meaningfulRules, language).map((c, i) => ({
+    ...c,
+    id: `BR-${String(i + 1).padStart(3, '0')}`,
+  }))
+  for (const criterion of ruleCriteria) {
     if (format === 'procedural' || format === 'both') {
-      const cases = generateProceduralTestCases(ruleAsCriterion, language, priority, severity, type)
+      const cases = generateProceduralTestCases(criterion, language, priority, severity, type)
       testCases.push(...cases)
     }
     if (format === 'gherkin') {
-      const cases = generateGherkinTestCases(ruleAsCriterion, language, priority, severity, type)
+      const cases = generateGherkinTestCases(criterion, language, priority, severity, type)
       testCases.push(...cases)
     }
   }

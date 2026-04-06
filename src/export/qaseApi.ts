@@ -30,6 +30,7 @@ function buildQasePayload(tc: TestCase, format: OutputFormat, suiteId?: number) 
 
   return {
     title: tc.title.replace(/^TC-\d+:\s*/, ''),
+    description: tc.description ?? '',
     preconditions: tc.preconditions.join('\n'),
     steps,
     priority: PRIORITY_MAP[tc.priority] ?? 2,

@@ -74,6 +74,7 @@ export function generateProceduralTestCases(
   cases.push({
     id: posId,
     title: `${posId}: ${buildPositiveTitle(criterion, lang)}`,
+    description: buildPositiveDescription(criterion, lang),
     kind: 'positive',
     preconditions,
     steps: buildPositiveSteps(criterion, lang),
@@ -93,6 +94,7 @@ export function generateProceduralTestCases(
       cases.push({
         id: negId,
         title: `${negId}: ${rule.title}`,
+        description: `${t('descNegativeVerify', lang)} ${rule.negation.charAt(0).toLowerCase() + rule.negation.slice(1)}. ${rule.expectedResult}.`,
         kind: 'negative',
         preconditions,
         steps: buildNegativeSteps(criterion, lang, rule.negation, rule.expectedResult),
@@ -109,14 +111,28 @@ export function generateProceduralTestCases(
   return cases
 }
 
-function buildPositiveTitle(criterion: AcceptanceCriterion, lang: Language): string {
+function truncateTitle(title: string, maxLen = 60): string {
+  if (title.length <= maxLen) return title
+  return title.slice(0, maxLen - 1).replace(/\s+\S*$/, '') + '…'
+}
+
+function buildPositiveTitle(criterion: AcceptanceCriterion, _lang: Language): string {
   const firstAction = criterion.actions[0]
   if (firstAction) {
-    const base = `${firstAction.verb} ${firstAction.target}`
-    return `${base} ${t('successSuffix', lang)}`
+    return truncateTitle(`${firstAction.verb} ${firstAction.target}`)
   }
-  const text = criterion.rawText.slice(0, 60).replace(/[\n\r]/g, ' ')
-  return `${text} ${t('happyPath', lang)}`
+  const text = (criterion.expectedResults[0] ?? criterion.rawText).replace(/[\n\r]+/g, ' ').trim()
+  return truncateTitle(text)
+}
+
+function buildPositiveDescription(criterion: AcceptanceCriterion, lang: Language): string {
+  const prefix = t('descVerifyThat', lang)
+  if (criterion.expectedResults.length > 0) {
+    const results = criterion.expectedResults.map(r => r.charAt(0).toLowerCase() + r.slice(1)).join('. ')
+    return `${prefix} ${results}.`
+  }
+  const text = criterion.rawText.replace(/[\n\r]+/g, ' ').trim()
+  return `${prefix} ${text.charAt(0).toLowerCase() + text.slice(1)}.`
 }
 
 interface DerivedRule { title: string; negation: string; expectedResult: string }
@@ -191,6 +207,7 @@ function generateBVACases(criterion: AcceptanceCriterion, lang: Language, priori
       cases.push({
         id, kind: 'bva',
         title: `${id}: ${element.name} — ${t('minBoundaryTitle', lang)} (${min})`,
+        description: `${t('descBvaMinVerify', lang)} ${element.name} (${min}).`,
         preconditions,
         steps: [
           { number: 1, action: t('accessFeature', lang), data: '—', expectedResult: t('screenIsDisplayed', lang) },
@@ -207,6 +224,7 @@ function generateBVACases(criterion: AcceptanceCriterion, lang: Language, priori
       cases.push({
         id, kind: 'bva',
         title: `${id}: ${element.name} — ${t('maxBoundaryTitle', lang)} (${max + 1})`,
+        description: `${t('descBvaMaxVerify', lang)} ${element.name} (max: ${max}).`,
         preconditions,
         steps: [
           { number: 1, action: t('accessFeature', lang), data: '—', expectedResult: t('screenIsDisplayed', lang) },

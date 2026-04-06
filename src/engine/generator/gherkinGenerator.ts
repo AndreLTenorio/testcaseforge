@@ -23,17 +23,40 @@ function buildThenSteps(expectedResults: string[], lang: Language): GherkinStep[
   return expectedResults.map((r, i) => ({ keyword: i === 0 ? 'Then' : 'And' as GherkinStep['keyword'], text: r.toLowerCase() }))
 }
 
+function capitalizeFirst(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+function truncateTitle(title: string, maxLen = 60): string {
+  if (title.length <= maxLen) return title
+  return title.slice(0, maxLen - 1).replace(/\s+\S*$/, '') + '…'
+}
+
 function buildScenarioTitle(criterion: AcceptanceCriterion, lang: Language, kind: 'positive' | 'negative'): string {
   const firstAction = criterion.actions[0]
   if (firstAction) {
-    const base = `${firstAction.verb} ${firstAction.target}`.toLowerCase()
-    if (kind === 'positive') return `${base} ${t('successSuffix', lang)}`
-    const tryPrefix = lang === 'pt-br' ? 'tentar' : lang === 'es' ? 'intentar' : 'try to'
+    const base = `${firstAction.verb} ${firstAction.target}`
+    if (kind === 'positive') return capitalizeFirst(truncateTitle(base))
+    const tryPrefix = lang === 'pt-br' ? 'Tentar' : lang === 'es' ? 'Intentar' : 'Try to'
     const withInvalid = lang === 'pt-br' ? 'com dados inválidos' : lang === 'es' ? 'con datos inválidos' : 'with invalid data'
-    return `${tryPrefix} ${base} ${withInvalid}`
+    return truncateTitle(`${tryPrefix} ${base.toLowerCase()} ${withInvalid}`)
   }
-  const text = criterion.rawText.slice(0, 50).replace(/[\n\r]/g, ' ')
-  return kind === 'positive' ? `${text} (${t('successSuffix', lang)})` : `${text} (${t('happyPath', lang)})`
+  const text = criterion.rawText.replace(/[\n\r]+/g, ' ').trim()
+  if (kind === 'positive') return truncateTitle(text)
+  return truncateTitle(`${text} — ${t('tryWithInvalidData', lang)}`)
+}
+
+function buildScenarioDescription(criterion: AcceptanceCriterion, lang: Language, kind: 'positive' | 'negative'): string {
+  if (kind === 'positive') {
+    const prefix = t('descVerifyThat', lang)
+    if (criterion.expectedResults.length > 0) {
+      const results = criterion.expectedResults.map(r => r.charAt(0).toLowerCase() + r.slice(1)).join('. ')
+      return `${prefix} ${results}.`
+    }
+    const text = criterion.rawText.replace(/[\n\r]+/g, ' ').trim()
+    return `${prefix} ${text.charAt(0).toLowerCase() + text.slice(1)}.`
+  }
+  return `${t('descNegativeVerify', lang)} ${t('userTriesInvalid', lang)}. ${t('systemShowsError', lang)}.`
 }
 
 export function generateGherkinTestCases(
@@ -51,6 +74,7 @@ export function generateGherkinTestCases(
   cases.push({
     id: posId,
     title: `${posId}: ${buildScenarioTitle(criterion, lang, 'positive')}`,
+    description: buildScenarioDescription(criterion, lang, 'positive'),
     kind: 'positive',
     preconditions: criterion.preconditions,
     steps: [],
@@ -73,6 +97,7 @@ export function generateGherkinTestCases(
       cases.push({
         id: negId,
         title: `${negId}: ${negTitle}`,
+        description: buildScenarioDescription(criterion, lang, 'negative'),
         kind: 'negative',
         preconditions: criterion.preconditions,
         steps: [],

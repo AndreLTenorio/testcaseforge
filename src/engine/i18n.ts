@@ -29,6 +29,11 @@ type LabelKey =
   | 'tryWithInvalidData'
   | 'invalidDataNegation'
   | 'invalidDataExpected'
+  // Descriptions
+  | 'descVerifyThat'
+  | 'descNegativeVerify'
+  | 'descBvaMinVerify'
+  | 'descBvaMaxVerify'
 
 type Labels = Record<Language, string>
 
@@ -61,6 +66,11 @@ const LABELS: Record<LabelKey, Labels> = {
   tryWithInvalidData:  { 'pt-br': 'Tentar realizar ação com dados inválidos', 'en': 'Try to perform action with invalid data', 'es': 'Intentar realizar acción con datos inválidos' },
   invalidDataNegation: { 'pt-br': 'Preencher dados com valores inválidos ou incompletos', 'en': 'Fill data with invalid or incomplete values', 'es': 'Rellenar datos con valores inválidos o incompletos' },
   invalidDataExpected: { 'pt-br': 'Sistema exibe mensagem de erro adequada', 'en': 'System displays appropriate error message', 'es': 'El sistema muestra un mensaje de error apropiado' },
+  // Descriptions
+  descVerifyThat:      { 'pt-br': 'Verificar que',                           'en': 'Verify that',                         'es': 'Verificar que' },
+  descNegativeVerify:  { 'pt-br': 'Verificar que o sistema rejeita a ação quando', 'en': 'Verify that the system rejects the action when', 'es': 'Verificar que el sistema rechaza la acción cuando' },
+  descBvaMinVerify:    { 'pt-br': 'Verificar que o sistema aceita o valor no limite mínimo para', 'en': 'Verify that the system accepts the value at minimum boundary for', 'es': 'Verificar que el sistema acepta el valor en el límite mínimo para' },
+  descBvaMaxVerify:    { 'pt-br': 'Verificar que o sistema rejeita o valor acima do limite máximo para', 'en': 'Verify that the system rejects the value above maximum boundary for', 'es': 'Verificar que el sistema rechaza el valor sobre el límite máximo para' },
 }
 
 export function t(key: LabelKey, lang: Language): string {

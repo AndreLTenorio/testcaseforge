@@ -40,9 +40,12 @@ export default function QasePreview({ testCase, format }: QasePreviewProps) {
 
       {/* Qase content */}
       <div className="bg-white dark:bg-slate-900 p-4 space-y-4">
-        {/* Title + meta */}
+        {/* Title + description + meta */}
         <div>
           <h3 className="font-semibold text-slate-800 dark:text-slate-100 text-base">{testCase.title}</h3>
+          {testCase.description && (
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{testCase.description}</p>
+          )}
           <div className="flex flex-wrap gap-2 mt-2">
             <QasePill label="Status" value="Ativo" color="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" />
             <QasePill label="Tipo" value={testCase.type} color="bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300" />

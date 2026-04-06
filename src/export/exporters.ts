@@ -18,10 +18,11 @@ export function exportJSON(output: GeneratedOutput) {
 }
 
 export function exportCSV(output: GeneratedOutput) {
-  const headers = ['ID', 'Título', 'Tipo', 'Comportamento', 'Prioridade', 'Gravidade', 'Pré-condições', 'Passos']
+  const headers = ['ID', 'Título', 'Descrição', 'Tipo', 'Comportamento', 'Prioridade', 'Gravidade', 'Pré-condições', 'Passos']
   const rows = output.testCases.map(tc => [
     tc.id,
     tc.title,
+    tc.description ?? '',
     tc.type,
     tc.behavior,
     tc.priority,
@@ -47,6 +48,10 @@ export function exportMarkdown(output: GeneratedOutput, format: OutputFormat) {
   for (const tc of output.testCases) {
     lines.push(`## ${tc.title}`)
     lines.push('')
+    if (tc.description) {
+      lines.push(`> ${tc.description}`)
+      lines.push('')
+    }
     lines.push(`**Prioridade:** ${tc.priority} | **Tipo:** ${tc.type} | **Comportamento:** ${tc.behavior}`)
     lines.push('')
 
@@ -89,6 +94,7 @@ export function buildAllText(output: GeneratedOutput, format: OutputFormat): str
 
   for (const tc of output.testCases) {
     lines.push(`[${tc.id}] ${tc.title}`)
+    if (tc.description) lines.push(`Descrição: ${tc.description}`)
     lines.push(`Prioridade: ${tc.priority} | Tipo: ${tc.type} | Comportamento: ${tc.behavior}`)
 
     if (tc.preconditions.length > 0) {
@@ -115,6 +121,7 @@ export function buildAllText(output: GeneratedOutput, format: OutputFormat): str
 export function buildIndividualText(tc: TestCase, format: OutputFormat): string {
   const lines: string[] = []
   lines.push(`${tc.title}`)
+  if (tc.description) lines.push(`Descrição: ${tc.description}`)
   lines.push(`Prioridade: ${tc.priority} | Tipo: ${tc.type} | Comportamento: ${tc.behavior}`)
   lines.push('')
 
